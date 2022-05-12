@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 
@@ -9,6 +10,7 @@ public class Movement : MonoBehaviour
     [SerializeField] float _gravityScale;
     [SerializeField] float _countJumps;
     [SerializeField] float _maxCountJumps;
+    [SerializeField] float _dashTime;
     [SerializeField] float _dashSpeed;
     Vector3 _moveDirection;
     private void Start()
@@ -31,13 +33,24 @@ public class Movement : MonoBehaviour
         if (_charController.isGrounded)
             _countJumps = 0;
         if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            _moveDirection = -(transform.forward * Input.GetAxis("Vertical") * _dashSpeed + transform.right * Input.GetAxis("Horizontal") * _dashSpeed);
-            //_moveDirection = transform.forward * Input.GetAxis("Vertical") + transform.right * Input.GetAxis("Horizontal");
-            //_moveDirection = _moveDirection.normalized * _dashSpeed;
-            _moveDirection.y = yStore;
-        }
-        _moveDirection.y = _moveDirection.y + Physics.gravity.y * _gravityScale * Time.deltaTime;
+            StartCoroutine(Dash());
+            //if (Input.GetKeyDown(KeyCode.LeftShift))
+            //{
+            //    _moveDirection = -(transform.forward * Input.GetAxis("Vertical") * _dashSpeed + transform.right * Input.GetAxis("Horizontal") * _dashSpeed);
+            //    //_moveDirection = transform.forward * Input.GetAxis("Vertical") + transform.right * Input.GetAxis("Horizontal");
+            //    //_moveDirection = _moveDirection.normalized * _dashSpeed;
+            //    _moveDirection.y = yStore;
+            //}
+            _moveDirection.y = _moveDirection.y + Physics.gravity.y * _gravityScale * Time.deltaTime;
         _charController.Move(_moveDirection * Time.deltaTime);
+    }
+    IEnumerator Dash()
+    {
+        float startTime = Time.time;
+        while(Time.time < startTime + _dashTime)
+        {
+            _charController.Move(_moveDirection * _dashSpeed * Time.deltaTime);
+            yield return null;
+        }
     }
 }

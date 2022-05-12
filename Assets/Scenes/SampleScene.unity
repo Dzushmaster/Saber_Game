@@ -3812,8 +3812,9 @@ MonoBehaviour:
   _jumpForce: 15
   _gravityScale: 8
   _countJumps: 0
-  _maxCountJumps: 1
-  _dashSpeed: 300
+  _maxCountJumps: 2
+  _dashTime: 0.005
+  _dashSpeed: 10
 --- !u!143 &7657421050517994989
 CharacterController:
   m_ObjectHideFlags: 0
