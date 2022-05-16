@@ -53,4 +53,20 @@ public class Movement : MonoBehaviour
             yield return null;
         }
     }
+    //public void OnCollisionEnter(Collision collision)
+    //{
+    //    if (collision.gameObject.tag.Equals("Platform"))
+    //    {
+    //        Debug.Log("trigger");
+    //        this.transform.parent = collision.gameObject.transform;
+    //    }
+    //}
+    //public void OnCollisionExit(Collision collision)
+    //{
+    //    if (collision.gameObject.tag.Equals("Platform"))
+    //    {
+    //        collision.gameObject.transform.SetParent(null);
+    //    }
+    //}
+
 }
