@@ -22,7 +22,7 @@ public class Movement : MonoBehaviour
     {
         //_moveDirection = new Vector3(_movementSpeed * Input.GetAxis("Horizontal"), _moveDirection.y, _movementSpeed * Input.GetAxis("Vertical"));
         float yStore = _moveDirection.y;
-        _moveDirection = -( transform.forward * Input.GetAxis("Vertical") * _movementSpeed+ transform.right * Input.GetAxis("Horizontal") * _movementSpeed);
+        _moveDirection = -(transform.forward * Input.GetAxis("Vertical") * _movementSpeed + transform.right * Input.GetAxis("Horizontal") * _movementSpeed);
         //_moveDirection = _moveDirection.normalized * (-_movementSpeed);
         _moveDirection.y = yStore;
         if (Input.GetButtonDown("Jump") && _countJumps < _maxCountJumps)
@@ -34,22 +34,23 @@ public class Movement : MonoBehaviour
             _countJumps = 0;
         if (Input.GetKeyDown(KeyCode.LeftShift))
             StartCoroutine(Dash());
-            //if (Input.GetKeyDown(KeyCode.LeftShift))
-            //{
-            //    _moveDirection = -(transform.forward * Input.GetAxis("Vertical") * _dashSpeed + transform.right * Input.GetAxis("Horizontal") * _dashSpeed);
-            //    //_moveDirection = transform.forward * Input.GetAxis("Vertical") + transform.right * Input.GetAxis("Horizontal");
-            //    //_moveDirection = _moveDirection.normalized * _dashSpeed;
-            //    _moveDirection.y = yStore;
-            //}
-            _moveDirection.y = _moveDirection.y + Physics.gravity.y * _gravityScale * Time.deltaTime;
+        //if (Input.GetKeyDown(KeyCode.LeftShift))
+        //{
+        //    _moveDirection = -(transform.forward * Input.GetAxis("Vertical") * _dashSpeed + transform.right * Input.GetAxis("Horizontal") * _dashSpeed);
+        //    //_moveDirection = transform.forward * Input.GetAxis("Vertical") + transform.right * Input.GetAxis("Horizontal");
+        //    //_moveDirection = _moveDirection.normalized * _dashSpeed;
+        //    _moveDirection.y = yStore;
+        //}
+        _moveDirection.y = _moveDirection.y + Physics.gravity.y * _gravityScale * Time.deltaTime;
         _charController.Move(_moveDirection * Time.deltaTime);
     }
     IEnumerator Dash()
     {
         float startTime = Time.time;
-        while(Time.time < startTime + _dashTime)
+        while (Time.time < startTime + _dashTime)
         {
-            _charController.Move(_moveDirection * _dashSpeed * Time.deltaTime);
+            _moveDirection.y = 0;
+            _charController.Move(new Vector3(_moveDirection.x * _dashSpeed * Time.deltaTime, 0, _moveDirection.z * _dashSpeed * Time.deltaTime));
             yield return null;
         }
     }
