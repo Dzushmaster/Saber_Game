@@ -11,20 +11,36 @@ public class Movement : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private Transform orientation;
+    [SerializeField] private float fallSpeed;
+    [SerializeField] private int maxCountJump;
+    private int countJump;
+    private float playerSize = 2;
+    private float groundDrag = 1;
+    private bool grounded;
     private Vector3 moveDirection;
     private Rigidbody rb;
     private float horizontalInput;
     private float verticalInput;
+    
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        grounded = true;
     }
     void Update()
     {
+        grounded = Physics.Raycast(transform.position, Vector3.down, playerSize * 0.5f + 0.2f);
         InputMove();
         SpeedControl();
+        if (grounded)
+        {
+            rb.drag = groundDrag;
+            countJump = 0;
+        }
+        else
+            rb.drag = 0;
     }
 
     private void FixedUpdate()
@@ -36,14 +52,18 @@ public class Movement : MonoBehaviour
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && maxCountJump > countJump + 1)
+        {
+            countJump++;
             Jump();
+        }
     }
 
     private void MovePlayer()
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+        rb.AddForce(Physics.gravity * fallSpeed, ForceMode.Force);
     }
     private void Jump()
     {
