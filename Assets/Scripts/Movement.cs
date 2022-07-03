@@ -1,55 +1,63 @@
 using System;
 using System.Collections;
+using System.Timers;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UIElements;
 
 public class Movement : MonoBehaviour
 {
-    //[SerializeField] GameObject gm;
-    [SerializeField] float _movementSpeed;
-    [SerializeField] float _jumpForce;
-    [SerializeField] float _gravityScale;
-    [SerializeField] float _maxCountJumps;
-    [SerializeField] float _dashTime;
-    [SerializeField] float _dashSpeed;
-    Vector3 _moveDirection;
-    float _countJumps;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private Transform orientation;
+    private Vector3 moveDirection;
+    private Rigidbody rb;
+    private float horizontalInput;
+    private float verticalInput;
+
     private void Start()
     {
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
     }
-    // Update is called once per frame
     void Update()
     {
-        float yStore = _moveDirection.y;
-        _moveDirection = (transform.forward * Input.GetAxis("Vertical") * _movementSpeed + transform.right * Input.GetAxis("Horizontal") * _movementSpeed);
-        _moveDirection.y = yStore;
-        if (Input.GetButtonDown("Jump") && _countJumps+1 < _maxCountJumps)
-        {
-            _moveDirection.y = _jumpForce;
-            _countJumps++;
-        }
-        transform.position += _moveDirection;
-        // if (_charController.isGrounded)
-        //     _countJumps = 0;
-        // if (Input.GetKeyDown(KeyCode.LeftShift))
-        //     StartCoroutine(Dash());
-        // _moveDirection.y = _moveDirection.y + Physics.gravity.y * _gravityScale * Time.deltaTime;
-        //_charController.Move(_moveDirection * Time.deltaTime);
-    }
-    IEnumerator Dash()
-    {
-        float startTime = Time.time;
-        while (Time.time < startTime + _dashTime)
-        {
-            _moveDirection.y = 0;
-            // _charController.Move(new Vector3(_moveDirection.x * _dashSpeed * Time.deltaTime, 0, _moveDirection.z * _dashSpeed * Time.deltaTime));
-            yield return null;
-        }
+        InputMove();
+        SpeedControl();
     }
 
-    // private void OnTriggerStay(Collider other)
-    // {
-    //     if(other.CompareTag("Convayor"))
-    //         _charController.Move(Vector3.MoveTowards(_charController.transform.position, ))
-    // }
+    private void FixedUpdate()
+    {
+        MovePlayer();
+    }
+
+    private void InputMove()
+    {
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
+        if (Input.GetKeyDown(KeyCode.Space))
+            Jump();
+    }
+
+    private void MovePlayer()
+    {
+        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+    }
+    private void Jump()
+    {
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+    }
+
+    private void SpeedControl()
+    {
+        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        if (flatVel.magnitude > moveSpeed)
+        {
+            Vector3 limitedVel = flatVel.normalized * moveSpeed;
+            rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
+        }
+    }
 }
