@@ -13,6 +13,7 @@ public class Movement : MonoBehaviour
     [SerializeField] private Transform orientation;
     [SerializeField] private float fallSpeed;
     [SerializeField] private int maxCountJump;
+    [SerializeField] private float dashSpeed;
     private int countJump;
     private float playerSize = 2;
     private float groundDrag = 1;
@@ -57,6 +58,9 @@ public class Movement : MonoBehaviour
             countJump++;
             Jump();
         }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+            Dash();
     }
 
     private void MovePlayer()
@@ -79,5 +83,10 @@ public class Movement : MonoBehaviour
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
             rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
         }
+    }
+
+    private void Dash()
+    {
+        rb.AddForce(Vector3.forward.normalized * dashSpeed * 10f, ForceMode.Impulse);
     }
 }

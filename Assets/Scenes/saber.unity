@@ -1181,8 +1181,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 4
-  jumpForce: 7
+  jumpForce: 10
   orientation: {fileID: 558167607}
+  fallSpeed: 1.5
+  maxCountJump: 2
+  dashSpeed: 0
 --- !u!136 &577428837
 CapsuleCollider:
   m_ObjectHideFlags: 0
