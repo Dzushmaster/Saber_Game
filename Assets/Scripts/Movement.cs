@@ -1,72 +1,92 @@
+using System;
 using System.Collections;
+using System.Timers;
+using Unity.VisualScripting;
 using UnityEngine;
-[RequireComponent(typeof(CharacterController))]
+using UnityEngine.Serialization;
+using UnityEngine.UIElements;
 
 public class Movement : MonoBehaviour
 {
-    [SerializeField] CharacterController _charController;
-    [SerializeField] float _movementSpeed;
-    [SerializeField] float _jumpForce;
-    [SerializeField] float _gravityScale;
-    [SerializeField] float _countJumps;
-    [SerializeField] float _maxCountJumps;
-    [SerializeField] float _dashTime;
-    [SerializeField] float _dashSpeed;
-    Vector3 _moveDirection;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private Transform orientation;
+    [SerializeField] private float fallSpeed;
+    [SerializeField] private int maxCountJump;
+    [SerializeField] private float dashSpeed;
+    private int countJump;
+    private float playerSize = 2;
+    private float groundDrag = 1;
+    private bool grounded;
+    private Vector3 moveDirection;
+    private Rigidbody rb;
+    private float horizontalInput;
+    private float verticalInput;
+    
+
     private void Start()
     {
-        _charController = GetComponent<CharacterController>();
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
+        grounded = true;
     }
-    // Update is called once per frame
     void Update()
     {
-        //_moveDirection = new Vector3(_movementSpeed * Input.GetAxis("Horizontal"), _moveDirection.y, _movementSpeed * Input.GetAxis("Vertical"));
-        float yStore = _moveDirection.y;
-        _moveDirection = -( transform.forward * Input.GetAxis("Vertical") * _movementSpeed+ transform.right * Input.GetAxis("Horizontal") * _movementSpeed);
-        //_moveDirection = _moveDirection.normalized * (-_movementSpeed);
-        _moveDirection.y = yStore;
-        if (Input.GetButtonDown("Jump") && _countJumps < _maxCountJumps)
+        grounded = Physics.Raycast(transform.position, Vector3.down, playerSize * 0.5f + 0.2f);
+        InputMove();
+        SpeedControl();
+        if (grounded)
         {
-            _moveDirection.y = _jumpForce;
-            _countJumps++;
+            rb.drag = groundDrag;
+            countJump = 0;
         }
-        if (_charController.isGrounded)
-            _countJumps = 0;
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-            StartCoroutine(Dash());
-            //if (Input.GetKeyDown(KeyCode.LeftShift))
-            //{
-            //    _moveDirection = -(transform.forward * Input.GetAxis("Vertical") * _dashSpeed + transform.right * Input.GetAxis("Horizontal") * _dashSpeed);
-            //    //_moveDirection = transform.forward * Input.GetAxis("Vertical") + transform.right * Input.GetAxis("Horizontal");
-            //    //_moveDirection = _moveDirection.normalized * _dashSpeed;
-            //    _moveDirection.y = yStore;
-            //}
-            _moveDirection.y = _moveDirection.y + Physics.gravity.y * _gravityScale * Time.deltaTime;
-        _charController.Move(_moveDirection * Time.deltaTime);
+        else
+            rb.drag = 0;
     }
-    IEnumerator Dash()
-    {
-        float startTime = Time.time;
-        while(Time.time < startTime + _dashTime)
-        {
-            _charController.Move(_moveDirection * _dashSpeed * Time.deltaTime);
-            yield return null;
-        }
-    }
-    //public void OnCollisionEnter(Collision collision)
-    //{
-    //    if (collision.gameObject.tag.Equals("Platform"))
-    //    {
-    //        Debug.Log("trigger");
-    //        this.transform.parent = collision.gameObject.transform;
-    //    }
-    //}
-    //public void OnCollisionExit(Collision collision)
-    //{
-    //    if (collision.gameObject.tag.Equals("Platform"))
-    //    {
-    //        collision.gameObject.transform.SetParent(null);
-    //    }
-    //}
 
+    private void FixedUpdate()
+    {
+        MovePlayer();
+    }
+
+    private void InputMove()
+    {
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
+        if (Input.GetKeyDown(KeyCode.Space) && maxCountJump > countJump + 1)
+        {
+            countJump++;
+            Jump();
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+            Dash();
+    }
+
+    private void MovePlayer()
+    {
+        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+        rb.AddForce(Physics.gravity * fallSpeed, ForceMode.Force);
+    }
+    private void Jump()
+    {
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+    }
+
+    private void SpeedControl()
+    {
+        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        if (flatVel.magnitude > moveSpeed)
+        {
+            Vector3 limitedVel = flatVel.normalized * moveSpeed;
+            rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
+        }
+    }
+
+    private void Dash()
+    {
+        rb.AddForce(Vector3.forward.normalized * dashSpeed * 10f, ForceMode.Impulse);
+    }
 }
