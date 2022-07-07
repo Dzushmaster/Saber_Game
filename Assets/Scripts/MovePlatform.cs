@@ -1,3 +1,4 @@
+using System;
 using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,4 +25,13 @@ public class MovePlatform : MonoBehaviour
             _pointInPath.MoveNext();
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        collision.transform.SetParent(transform);
+    }
+
+    private void OnCollisionExit(Collision other)
+    {
+        other.transform.SetParent(null);
+    }
 }
