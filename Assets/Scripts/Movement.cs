@@ -1,11 +1,4 @@
-using System;
-using System.Collections;
-using System.Timers;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UIElements;
-
 public class Movement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
@@ -14,6 +7,9 @@ public class Movement : MonoBehaviour
     [SerializeField] private float fallSpeed;
     [SerializeField] private int maxCountJump;
     [SerializeField] private float dashSpeed;
+    public Transform camera;
+    private float turnSmoothVelocity;
+    private float turnSmoothTime = 0.1f;
     private int countJump;
     private float playerSize = 2;
     private float groundDrag = 1;
@@ -26,6 +22,7 @@ public class Movement : MonoBehaviour
 
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         grounded = true;
@@ -65,9 +62,16 @@ public class Movement : MonoBehaviour
 
     private void MovePlayer()
     {
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
-        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
-        rb.AddForce(Physics.gravity * fallSpeed, ForceMode.Force);
+        moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
+        if (moveDirection.magnitude >= .1f)
+        {
+            float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+            Vector3 moveDir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+            rb.AddForce(moveDir.normalized * moveSpeed * 10f, ForceMode.Force);
+            rb.AddForce(Physics.gravity * fallSpeed, ForceMode.Force);
+        }
     }
     private void Jump()
     {
@@ -87,6 +91,10 @@ public class Movement : MonoBehaviour
 
     private void Dash()
     {
-        rb.AddForce(Vector3.forward.normalized * dashSpeed * 10f, ForceMode.Impulse);
+        float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
+        float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+        transform.rotation = Quaternion.Euler(0f, angle, 0f);
+        Vector3 moveDir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+        rb.AddForce(moveDir.normalized * dashSpeed * 10f, ForceMode.Impulse);
     }
 }
