@@ -3,7 +3,6 @@ public class Movement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
-    [SerializeField] private Transform orientation;
     [SerializeField] private float fallSpeed;
     [SerializeField] private int maxCountJump;
     [SerializeField] private float dashSpeed;
