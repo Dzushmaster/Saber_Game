@@ -3,7 +3,6 @@ public class Movement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
-    [SerializeField] private Transform orientation;
     [SerializeField] private float fallSpeed;
     [SerializeField] private int maxCountJump;
     [SerializeField] private float dashSpeed;
@@ -29,6 +28,7 @@ public class Movement : MonoBehaviour
     }
     void Update()
     {
+        rb.AddForce(Physics.gravity * fallSpeed, ForceMode.Force);
         grounded = Physics.Raycast(transform.position, Vector3.down, playerSize * 0.5f + 0.2f);
         InputMove();
         SpeedControl();
@@ -70,7 +70,6 @@ public class Movement : MonoBehaviour
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
             Vector3 moveDir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
             rb.AddForce(moveDir.normalized * moveSpeed * 10f, ForceMode.Force);
-            rb.AddForce(Physics.gravity * fallSpeed, ForceMode.Force);
         }
     }
     private void Jump()
