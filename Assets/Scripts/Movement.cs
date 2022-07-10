@@ -3,7 +3,6 @@ public class Movement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
-    [SerializeField] private Transform orientation;
     [SerializeField] private float fallSpeed;
     [SerializeField] private int maxCountJump;
     [SerializeField] private float dashSpeed;
@@ -29,6 +28,7 @@ public class Movement : MonoBehaviour
     }
     void Update()
     {
+        rb.AddForce(Physics.gravity * fallSpeed, ForceMode.Force);
         grounded = Physics.Raycast(transform.position, Vector3.down, playerSize * 0.5f + 0.2f);
         InputMove();
         SpeedControl();
@@ -43,7 +43,10 @@ public class Movement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        MovePlayer();
+        float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
+        float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+        transform.rotation = Quaternion.Euler(0f, angle, 0f);
+        MovePlayer(angle);
     }
 
     private void InputMove()
@@ -60,17 +63,13 @@ public class Movement : MonoBehaviour
             Dash();
     }
 
-    private void MovePlayer()
+    private void MovePlayer(float angle)
     {
         moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
         if (moveDirection.magnitude >= .1f)
         {
-            float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
             Vector3 moveDir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
             rb.AddForce(moveDir.normalized * moveSpeed * 10f, ForceMode.Force);
-            rb.AddForce(Physics.gravity * fallSpeed, ForceMode.Force);
         }
     }
     private void Jump()
