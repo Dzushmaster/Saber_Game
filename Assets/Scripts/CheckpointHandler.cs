@@ -1,0 +1,23 @@
+﻿using Assets.Scripts.Infrastructure;
+using UnityEngine;
+
+namespace Assets.Scripts
+{
+    public class CheckpointHandler : MonoBehaviour
+    {
+        [SerializeField]
+        private Checkpoint _checkpoint;
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!other.CompareTag("Player"))
+            {
+                return;
+            }
+
+            other.transform.position = _checkpoint.transform.position;
+            other.transform.rotation = Quaternion.identity;
+        }
+
+    }
+}

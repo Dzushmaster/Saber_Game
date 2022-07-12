@@ -6,6 +6,6 @@ namespace Assets.Scripts.Infrastructure
     {
         public KeyCode Key { get; set; }
 
-        public abstract void Apply();
+        public abstract void Activate(GameObject obj);
     }
 }
