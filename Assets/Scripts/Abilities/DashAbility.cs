@@ -7,7 +7,7 @@ namespace Assets.Scripts.Abilities
     {
         public override void Activate(GameObject player)
         {
-            player.GetComponent<Rigidbody>().AddForce(player.transform.forward * 10f, ForceMode.Force);
+            player.GetComponent<Rigidbody>().AddForce(player.transform.forward * 100f, ForceMode.Impulse);
         }
     }
 }

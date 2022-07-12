@@ -8,7 +8,8 @@ namespace Assets.Scripts
 
         private void OnDrawGizmos()
         {
-            Gizmos.DrawSphere(transform.position, 1f);
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(transform.position, 0.1f);
         }
 
 #endif

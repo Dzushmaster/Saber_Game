@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class CheckpointHandler : MonoBehaviour
+    public class CheckpointTrigger : MonoBehaviour
     {
         [SerializeField]
         private Checkpoint _checkpoint;
