@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - KillMachine
+  - PlayerKiller
+  - Enemy
   layers:
   - Default
   - TransparentFX
