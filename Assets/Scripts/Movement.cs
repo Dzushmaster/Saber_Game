@@ -69,13 +69,15 @@ public class Movement : MonoBehaviour
         if (moveDirection.magnitude >= .1f)
         {
             Vector3 moveDir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
-            rb.AddForce(moveDir.normalized * moveSpeed * 10f, ForceMode.Force);
+            rb.velocity += moveDir.normalized * moveSpeed;
+            //rb.AddForce(moveDir.normalized * moveSpeed * 10f, ForceMode.Force);
         }
     }
     private void Jump()
     {
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        rb.velocity += Vector3.up * jumpForce;
+        //rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
 
     private void SpeedControl()
@@ -94,6 +96,7 @@ public class Movement : MonoBehaviour
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
         transform.rotation = Quaternion.Euler(0f, angle, 0f);
         Vector3 moveDir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+        //rb.velocity += moveDir.normalized * dashSpeed * 10f;
         rb.AddForce(moveDir.normalized * dashSpeed * 10f, ForceMode.Impulse);
     }
 }
