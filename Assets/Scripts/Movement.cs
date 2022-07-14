@@ -59,8 +59,8 @@ public class Movement : MonoBehaviour
             Jump();
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
-            Dash();
+        // if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+        //     Dash();
     }
 
     private void MovePlayer(float angle)
@@ -83,6 +83,11 @@ public class Movement : MonoBehaviour
     private void SpeedControl()
     {
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        float friction = 10;
+        if (rb.velocity.magnitude > 0)
+        {
+            rb.AddForce(-rb.velocity.normalized * friction);
+        }
         if (flatVel.magnitude > moveSpeed)
         {
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
@@ -90,13 +95,13 @@ public class Movement : MonoBehaviour
         }
     }
 
-    private void Dash()
-    {
-        float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
-        float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-        transform.rotation = Quaternion.Euler(0f, angle, 0f);
-        Vector3 moveDir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
-        //rb.velocity += moveDir.normalized * dashSpeed * 10f;
-        rb.AddForce(moveDir.normalized * dashSpeed * 10f, ForceMode.Impulse);
-    }
+    // private void Dash()
+    // {
+    //     float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
+    //     float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+    //     transform.rotation = Quaternion.Euler(0f, angle, 0f);
+    //     Vector3 moveDir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+    //     //rb.velocity += moveDir.normalized * dashSpeed * 10f;
+    //     rb.AddForce(moveDir.normalized * dashSpeed * 10f, ForceMode.Impulse);
+    // }
 }
