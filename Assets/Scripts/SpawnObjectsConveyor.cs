@@ -9,12 +9,11 @@ public class SpawnObjectsConveyor : MonoBehaviour
     public float timeToSpawn;
 
     private float currentTimeToSpawn;
-
+    [SerializeField] private sbyte direction;
     private float timeToWait;
 
-    private float countObjectsToSpawn;
+    [SerializeField] private float countObjectsToSpawn;
 
-    private float countObjects;
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +34,7 @@ public class SpawnObjectsConveyor : MonoBehaviour
 
     private void SpawnObjects()
     {
-        Instantiate(objectToSpawn, transform.position, transform.rotation);
+        for(int i = 0; i < countObjectsToSpawn; i++)
+            Instantiate(objectToSpawn, transform.position + new Vector3(0,0, objectToSpawn.transform.localScale.z * i * 0.01f) * direction , transform.rotation);
     }
 }

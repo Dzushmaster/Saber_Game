@@ -45,11 +45,6 @@ public class Movement : MonoBehaviour
     {
         float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-        if (Input.GetKeyDown(KeyCode.Space) && maxCountJump > countJump + 1)
-        {
-            countJump++;
-            Jump();
-        }
         transform.rotation = Quaternion.Euler(0f, angle, 0f);
         MovePlayer(angle);
     }
@@ -58,8 +53,11 @@ public class Movement : MonoBehaviour
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
-
-
+        if (Input.GetKeyDown(KeyCode.Space) && maxCountJump > countJump + 1)
+        {
+            countJump++;
+            Jump();
+        }
         // if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
         //     Dash();
     }
@@ -77,8 +75,8 @@ public class Movement : MonoBehaviour
     private void Jump()
     {
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        rb.velocity += Vector3.up * jumpForce;
-        //rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        //rb.velocity += Vector3.up * jumpForce;
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
 
     private void SpeedControl()
