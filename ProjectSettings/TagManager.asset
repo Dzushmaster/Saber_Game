@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - KillMachine
+  - Trash
   layers:
   - Default
   - TransparentFX
