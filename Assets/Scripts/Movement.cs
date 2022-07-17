@@ -28,7 +28,6 @@ public class Movement : MonoBehaviour
     }
     void Update()
     {
-        rb.AddForce(Physics.gravity * fallSpeed, ForceMode.Force);
         grounded = Physics.Raycast(transform.position, Vector3.down, playerSize * 0.5f + 0.2f);
         InputMove();
         SpeedControl();
@@ -43,6 +42,7 @@ public class Movement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        rb.AddForce(Physics.gravity * fallSpeed, ForceMode.Force);
         float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + camera.eulerAngles.y;
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
         transform.rotation = Quaternion.Euler(0f, angle, 0f);
@@ -75,8 +75,8 @@ public class Movement : MonoBehaviour
     private void Jump()
     {
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        //rb.velocity += Vector3.up * jumpForce;
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        rb.velocity += Vector3.up * jumpForce;
+        //rb.AddForce(new Vector3(0, jumpHeight, 0), ForceMode.Impulse);
     }
 
     private void SpeedControl()

@@ -14,7 +14,6 @@ namespace Assets.Scripts
             {
                 return;
             }
-
             other.transform.position = _checkpoint.transform.position;
             other.transform.rotation = Quaternion.identity;
         }
