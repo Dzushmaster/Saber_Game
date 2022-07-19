@@ -1,3 +1,4 @@
+using System.Timers;
 using UnityEngine;
 public class Movement : MonoBehaviour
 {
@@ -17,7 +18,6 @@ public class Movement : MonoBehaviour
     private Rigidbody rb;
     private float horizontalInput;
     private float verticalInput;
-    
 
     private void Start()
     {
@@ -68,7 +68,8 @@ public class Movement : MonoBehaviour
         if (moveDirection.magnitude >= .1f)
         {
             Vector3 moveDir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
-            rb.velocity += moveDir.normalized * moveSpeed;
+            transform.Translate(moveDir * moveSpeed * Time.fixedDeltaTime, Space.World);
+            //rb.velocity += moveDir.normalized * moveSpeed;
             //rb.AddForce(moveDir.normalized * moveSpeed * 10f, ForceMode.Force);
         }
     }
