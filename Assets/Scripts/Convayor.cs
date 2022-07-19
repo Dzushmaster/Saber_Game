@@ -13,4 +13,9 @@ public class Convayor : MonoBehaviour
         if(other.attachedRigidbody != null)
             other.attachedRigidbody.position = Vector3.MoveTowards(other.transform.position, endpoint.position, speed * Time.deltaTime);
     }
+
+    private void Update()
+    {
+        gameObject.GetComponent<MeshRenderer>().material.mainTextureOffset += Vector2.left * speed * Time.deltaTime;
+    }
 }

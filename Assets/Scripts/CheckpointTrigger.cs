@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Infrastructure;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts
 {
@@ -7,7 +6,7 @@ namespace Assets.Scripts
     {
         [SerializeField]
         private Checkpoint _checkpoint;
-
+        
         private void OnTriggerEnter(Collider other)
         {
             if (!other.CompareTag("Player"))
